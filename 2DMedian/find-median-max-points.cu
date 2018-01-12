@@ -56,19 +56,18 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
 
     while(curr_thread < size) {
         point = pts[curr_thread];
-        while (curr_block < size * size) {
-            p1_index = (curr_block / size);
-            p2_index = (curr_block % size);
-            if (p1_index < p2_index){
-                tr.p1 = pts[p1_index];
-                tr.p2 = pts[p2_index];
-                for (p3_index = p2_index + 1; p3_index < size; ++p3_index) {
+        while (curr_block < size ) {
+            p1_index = (curr_block );
+            tr.p1 = pts[p1_index];
+            for (p2_index = p1_index + 1; p2_index < size - 1; ++p2_index) {
+                for (p3_index = p2_index + 1; p3_index < size; ++p3_index){
+                    tr.p2 = pts[p2_index];
                     if (thread_num != p1_index && thread_num != p2_index && thread_num != p3_index) {
                         tr.p3 = pts[p3_index];
                         if (inTriangle(& tr, point)) {
                             count += 1;
                         }
-                    } 
+                     }
                 }
             }
             curr_block += total_blocks;
