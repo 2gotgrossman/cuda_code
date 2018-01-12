@@ -1,4 +1,3 @@
-
 #include <cuda_runtime.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,11 +60,11 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
 
     while(block_num < size) {
         while (curr_thread < size * size) {
-            p1_index = (curr_thread/ size);
-            p2_index = (curr_thread% size);
+            p1_index = (curr_thread / size);
+            p2_index = (curr_thread % size);
             if (p1_index < p2_index){
-                tr.p1 = pts[curr_thread / size];
-                tr.p2 = pts[curr_thread % size];
+                tr.p1 = pts[p1_index];
+                tr.p2 = pts[p2_index];
                 for (p3_index = p2_index + 1; p3_index < size; ++p3_index) {
                     tr.p3 = pts[p3_index];
                     if (block_num != p1_index && block_num != p2_index && block_num != p3_index) {
@@ -79,8 +78,10 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
             curr_thread += threads_per_block;
         }
         atomicAdd(& count_for_block , count);
-        if(thread_num == 0)
+        if(thread_num == 0){
             counts[block_num] = count_for_block;
+            count_for_block = 0;
+        }
         __syncthreads();
         
         count = 0;
@@ -149,9 +150,9 @@ int main(int argc, char * argv[]) {
 
     cudaMemcpy(host_counts, device_counts, size * sizeof(int), cudaMemcpyDeviceToHost) ;
     
-    printf("OUT: %d \n", host_counts[5]);
-    printf("\ngpu-result=\n") ;
     int gpu_median_index = get_max_index(host_counts,size);
+    printf("OUT: %d \n", gpu_median_index);
+    printf("\ngpu-result=\n") ;
     printf("Size: %d, MedianX: %f, MedianY: %f, Dist: %f\n", size, host_points[gpu_median_index].x, host_points[gpu_median_index].y,
            sqrt(host_points[gpu_median_index].x*host_points[gpu_median_index].x +  host_points[gpu_median_index].y*host_points[gpu_median_index].y));
 
