@@ -10,7 +10,7 @@
 #define xDim 32
 #define yDim 32
 #define blockDim 32
-#define N 15
+#define N 25
 
 typedef struct {
     double x;
@@ -29,9 +29,9 @@ int get_max_index(int * counts, int length);
 int createVector(Point * ptArr, int max, int size);
 
 // TODO: Shared memory copies of threads
-
 __shared__ Point pts[N*N];
 __shared__ int count_for_block;
+
 __global__ void cuda_find_median(Point * points, int * counts, int size) {
     
     int count = 0;
@@ -66,8 +66,8 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
                 tr.p1 = pts[p1_index];
                 tr.p2 = pts[p2_index];
                 for (p3_index = p2_index + 1; p3_index < size; ++p3_index) {
-                    tr.p3 = pts[p3_index];
                     if (block_num != p1_index && block_num != p2_index && block_num != p3_index) {
+                        tr.p3 = pts[p3_index];
                         if (inTriangle(& tr, point)) {
                             count += 1;
                         }
@@ -137,7 +137,7 @@ int main(int argc, char * argv[]) {
 
     dim3 grid (blockDim) ;
     dim3 block (xDim, yDim) ;
-    cuda_find_median <<<grid,block, size>>> ( device_points, device_counts, size) ;
+    cuda_find_median <<<grid,block>>> ( device_points, device_counts, size) ;
 
     cudaDeviceSynchronize();
     cudaError_t err = cudaSuccess;
