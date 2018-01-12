@@ -31,7 +31,6 @@ int createVector(Point * ptArr, int max, int size);
 // TODO: Shared memory copies of threads
 
 __shared__ Point pts[N*N];
-__shared__ int count_for_block;
 __global__ void cuda_find_median(Point * points, int * counts, int size) {
 
     int count = 0;
@@ -42,9 +41,6 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
     int p1_index, p2_index, p3_index;
     Triangle tr;
 
-    if(thread_num == 0){
-        count_for_block = 0;
-    }
     if (thread_num < size ){
         int i = thread_num;
         while ( i < size){
