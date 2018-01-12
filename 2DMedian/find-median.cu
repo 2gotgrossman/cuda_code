@@ -10,7 +10,7 @@
 #define xDim 32
 #define yDim 32
 #define blockDim 32
-#define N 25
+#define N 32
 
 typedef struct {
     double x;
@@ -30,7 +30,6 @@ int createVector(Point * ptArr, int max, int size);
 
 // TODO: Shared memory copies of threads
 __shared__ Point pts[N*N];
-__shared__ int count_for_block;
 
 __global__ void cuda_find_median(Point * points, int * counts, int size) {
     
@@ -42,9 +41,6 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
     int p1_index, p2_index, p3_index;
     Triangle tr;
 
-    if(thread_num == 0){
-        count_for_block = 0;
-    }
     if (thread_num < size ){
         int i = thread_num;
         while ( i < size){ 
@@ -55,10 +51,11 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
     __syncthreads();
     assert(N*N == size);
 
-    Point point = pts[block_num];
+    Point point ;
     int curr_thread = thread_num;
 
     while(block_num < size) {
+        point = pts[block_num];
         while (curr_thread < size * size) {
             p1_index = (curr_thread / size);
             p2_index = (curr_thread % size);
@@ -76,18 +73,10 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
             }
             curr_thread += threads_per_block;
         }
-        atomicAdd(&count_for_block , count);
-        if(thread_num == 0 ){
-            counts[block_num] = count_for_block;
-            count_for_block = 0;
-        }
-
-        
-        __syncthreads();
+        atomicAdd(counts + block_num, count);
         curr_thread = thread_num;
         count = 0;
         block_num += total_blocks;
-        point = pts[block_num];
         
     }
 
@@ -118,16 +107,14 @@ int main(int argc, char * argv[]) {
         host_counts[index] = 0;
     }
 
-    host_points[5].x = 00.0;
-    host_points[5].y = 00.0;
-
+    host_points[5].x = 100.0;
+    host_points[5].y = 100.0;
 /*
     median_index_host = find_median_host(host_points,size) ;
     printf("\ncpu-result=\n") ;
     printf("Size: %d, MedianX: %f, MedianY: %f, Dist: %f\n", size, host_points[median_index_host].x, host_points[median_index_host].y,
            sqrt(host_points[median_index_host].x*host_points[median_index_host].x +  host_points[median_index_host].y*host_points[median_index_host].y));
 */
-
     cudaProfilerStart();
     // send data to cuda device
     cudaMalloc((Point **)&device_points, nBytes) ;
