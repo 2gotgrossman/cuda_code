@@ -10,7 +10,7 @@
 #define xDim 32
 #define yDim 32
 #define blockDim 32
-#define N 32
+#define N 15
 
 typedef struct {
     double x;
@@ -42,9 +42,9 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
     int p1_index, p2_index, p3_index;
     Triangle tr;
 
-    if(thread_num == 0)
+    if(thread_num == 0){
         count_for_block = 0;
-
+    }
     if (thread_num < size ){
         int i = thread_num;
         while ( i < size){ 
@@ -70,25 +70,27 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
                     if (block_num != p1_index && block_num != p2_index && block_num != p3_index) {
                         if (inTriangle(& tr, point)) {
                             count += 1;
-
                         }
                     }
                 }
             }
             curr_thread += threads_per_block;
         }
-        atomicAdd(& count_for_block , count);
-        if(thread_num == 0){
+        atomicAdd(&count_for_block , count);
+        if(thread_num == 0 ){
             counts[block_num] = count_for_block;
             count_for_block = 0;
         }
-        __syncthreads();
+
         
+        __syncthreads();
+        curr_thread = thread_num;
         count = 0;
         block_num += total_blocks;
         point = pts[block_num];
-        curr_thread = thread_num;
+        
     }
+
 }
 
 
@@ -116,8 +118,8 @@ int main(int argc, char * argv[]) {
         host_counts[index] = 0;
     }
 
-    host_points[5].x = 100.0;
-    host_points[5].y = 100.0;
+    host_points[5].x = 00.0;
+    host_points[5].y = 00.0;
 
 /*
     median_index_host = find_median_host(host_points,size) ;
@@ -137,6 +139,7 @@ int main(int argc, char * argv[]) {
     dim3 block (xDim, yDim) ;
     cuda_find_median <<<grid,block, size>>> ( device_points, device_counts, size) ;
 
+    cudaDeviceSynchronize();
     cudaError_t err = cudaSuccess;
     err = cudaGetLastError();
 
@@ -146,13 +149,14 @@ int main(int argc, char * argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    cudaDeviceSynchronize();
 
     cudaMemcpy(host_counts, device_counts, size * sizeof(int), cudaMemcpyDeviceToHost) ;
-    
-    int gpu_median_index = get_max_index(host_counts,size);
-    printf("OUT: %d \n", gpu_median_index);
+    for(int i = 0; i < size; i++){
+        printf("%d\n", host_counts[i]);
+    }
+ 
     printf("\ngpu-result=\n") ;
+    int gpu_median_index = get_max_index(host_counts,size);
     printf("Size: %d, MedianX: %f, MedianY: %f, Dist: %f\n", size, host_points[gpu_median_index].x, host_points[gpu_median_index].y,
            sqrt(host_points[gpu_median_index].x*host_points[gpu_median_index].x +  host_points[gpu_median_index].y*host_points[gpu_median_index].y));
 
