@@ -108,13 +108,13 @@ int main(int argc, char * argv[]) {
 
     host_points[5].x = 100.0;
     host_points[5].y = 100.0;
-/*
-    median_index_host = find_median_host(host_points,size) ;
+    cudaProfilerStart();
+/*    median_index_host = find_median_host(host_points,size) ;
     printf("\ncpu-result=\n") ;
     printf("Size: %d, MedianX: %f, MedianY: %f, Dist: %f\n", size, host_points[median_index_host].x, host_points[median_index_host].y,
            sqrt(host_points[median_index_host].x*host_points[median_index_host].x +  host_points[median_index_host].y*host_points[median_index_host].y));
 */
-    cudaProfilerStart();
+
     // send data to cuda device
     cudaMalloc((Point **)&device_points, nBytes) ;
     cudaMalloc((int **) &device_counts, size * sizeof(int));
@@ -137,11 +137,11 @@ int main(int argc, char * argv[]) {
 
 
     cudaMemcpy(host_counts, device_counts, size * sizeof(int), cudaMemcpyDeviceToHost) ;
-/*
+/**/
     for(int i = 0; i < size; i++){
         printf("%d\n", host_counts[i]);
     }
-*/
+/**/
 
     printf("\ngpu-result=\n") ;
     int gpu_median_index = get_max_index(host_counts,size);
