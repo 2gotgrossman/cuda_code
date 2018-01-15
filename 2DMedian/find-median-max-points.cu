@@ -65,9 +65,6 @@ __global__ void cuda_find_median(Point * points, int * counts, int size) {
                     if (thread_num != p1_index && thread_num != p2_index && thread_num != p3_index) {
                         tr.p3 = pts[p3_index];
                         if (inTriangle(& tr, point)) {
-                            if (curr_thread == 5){
-                                printf("Triangle: (%lf, %lf), (%lf, %lf), (%lf, %lf). Point: (%lf, %lf)\n", tr.p1.x, tr.p1.y, tr.p2.x, tr.p2.y, tr.p3.x, tr.p3.y, point.x, point.y);
-                            }
                             count += 1;
                         }
                      }
@@ -140,11 +137,11 @@ int main(int argc, char * argv[]) {
 
 
     cudaMemcpy(host_counts, device_counts, size * sizeof(int), cudaMemcpyDeviceToHost) ;
-/**/
+/*
     for(int i = 0; i < size; i++){
         printf("%d\n", host_counts[i]);
     }
-/**/
+/*
 
     printf("\ngpu-result=\n") ;
     int gpu_median_index = get_max_index(host_counts,size);
