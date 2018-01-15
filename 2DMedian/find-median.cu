@@ -161,7 +161,7 @@ int main(int argc, char * argv[]) {
 // https://stackoverflow.com/questions/13300904/determine-whether-pt-lies-inside-triangle
 bool inTriangleHost(Triangle * triangle, Point pt) {
     double inv_denom = 1.0 / ((triangle->p2.y - triangle->p3.y) * (triangle->p1.x - triangle->p3.x) +
-                              (triangle->p3.x - triangle->p2.x) * (triangle->p1.x - triangle->p3.y));
+                              (triangle->p3.x - triangle->p2.x) * (triangle->p1.y - triangle->p3.y));
 
     double a = ((triangle->p2.y - triangle->p3.y) * (pt.x - triangle->p3.x) +
                 (triangle->p3.x - triangle->p2.x)*(pt.y - triangle->p3.y)) * inv_denom;
@@ -183,7 +183,7 @@ bool inTriangleHost(Triangle * triangle, Point pt) {
 __device__ 
 bool inTriangle(Triangle * triangle, Point pt) {
     double inv_denom = 1.0 / ((triangle->p2.y - triangle->p3.y) * (triangle->p1.x - triangle->p3.x) +
-                              (triangle->p3.x - triangle->p2.x) * (triangle->p1.x - triangle->p3.y));
+                              (triangle->p3.x - triangle->p2.x) * (triangle->p1.y - triangle->p3.y));
 
     double a = ((triangle->p2.y - triangle->p3.y) * (pt.x - triangle->p3.x) +
                 (triangle->p3.x - triangle->p2.x)*(pt.y - triangle->p3.y)) * inv_denom;
