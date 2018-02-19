@@ -8,6 +8,13 @@
 # define m 6 // number of rows of a
 # define n 5 // number of columns of a
 
+
+__global__ void execute_gemv(cublasHandle_t handle, float * d_a, float * d_x, float * d_y){
+    float al = 1.0;
+    float beta = 0.0;
+    stat=cublasSgemv(handle,CUBLAS_OP_N,m,n,&al,d_a,m,d_x,1,&beta,d_y,1);
+}
+
 int main ( void ){
     cudaError_t cudaStat ; // cudaMalloc status
     cublasStatus_t stat ; // CUBLAS functions status
@@ -58,12 +65,13 @@ int main ( void ){
     stat = cublasSetVector (n, sizeof (*x) ,x ,1 ,d_x ,1); // cp x- >d_x
     stat = cublasSetVector (m, sizeof (*y) ,y ,1 ,d_y ,1); // cp y- >d_y
     float al =1.0 f; // al =1
-    float bet =0.0 f; // bet =1
+    float bet =0.0 f; // bet =0
     // matrix - vector multiplication : d_y = al*d_a *d_x + bet *d_y
     // d_a - mxn matrix ; d_x - n-vector , d_y - m- vector ;
     // al ,bet - scalars
-    stat=cublasSgemv(handle,CUBLAS OP N,m,n,&al,d a,m,d x,1,&bet,
-    d y,1);
+
+    execute_gemv <<<1,1>>> (handle, d_a, d_x, d_y);
+
     stat = cublasGetVector (m, sizeof (*y) ,d_y ,1 ,y ,1); // copy d_y - >y
     printf ("y after Sgemv ::\ n");
     for(j=0;j<m;j ++){
