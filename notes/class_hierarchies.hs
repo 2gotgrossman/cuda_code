@@ -8,18 +8,18 @@ matable :: Species a => a -> a -> Bool
 matable s1 s2 = gender s1 /= gender s2
 
 data Human = Man | Woman
-data Canine = Dog | Bitch
+data Canine = MaleDog | FemaleDog
 
 instance Species Human where
     gender Man = Male
     gender Woman = Female
 
 instance Species Canine where
-    gender Dog = Male
-    gender Bitch = Female
+    gender MaleDog = Male
+    gender FemaleDog = Female
 
-bark Dog = "woof"
-bark Bitch = "wow"
+bark MaleDog = "woof"
+bark FemaleDog = "wow"
 
 speak Man s = "The man says " ++ s
 speak Woman s = "The woman says " ++ s
