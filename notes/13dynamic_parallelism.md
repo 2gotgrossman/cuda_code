@@ -38,7 +38,7 @@ __global__ void kernel_child(unsigned int start, unsigned int end, float* moreDa
     - A parent and child thread can make global memory accessible to each other
     - Weak consistency(?)
     - Consistent when (1) child grid is created and (2) when the child grid completes
-        - Parent thread and determine completion by syncronizing
+          - Parent thread and determine completion by syncronizing
 2. Constant memory
     - Kernels cannot write to constant memory
 3. Local memory 
