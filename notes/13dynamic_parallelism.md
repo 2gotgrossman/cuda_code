@@ -49,7 +49,7 @@ __global__ void kernel_child(unsigned int start, unsigned int end, float* moreDa
     - Children do not have access
 5. In summary, use global memory (`malloc`) or `__device__` memory for sharing data between a parent and child
 
-### `malloc`ing meory
+### `malloc`ing memory
 1. If you are a device or host, you can only `cudaFree` memory that has been `cudaMalloc`ed from a device or host, respectively
 2. `cudaLimitMallocHeapSize` determines an allocation limit for device-allocated memory
 
