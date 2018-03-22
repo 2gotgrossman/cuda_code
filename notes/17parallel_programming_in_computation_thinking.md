@@ -41,16 +41,20 @@ Must have 3 properties:
 
 ## Space-Time Trade-offs
 1. Data locality in time of access
-    - 
+    - Threads within the same warp should coalesce since they are in lock step
 2. data locality in access patterns
-    - 
+    - Sequential memory accesses are pre-fetched
+    - [Strided Accesses](https://devblogs.nvidia.com/wp-content/uploads/2012/10/stride.png) 
 3. Data sharing
     - Excessive data sharing reduces parallel execution
     - Don't want data throughput to be a bottleneck
     - Want to keep localized. Can improve memory bandwith efficiency without creating conflicts
     - Can be achieved through syncronization of tasks and coordinating data accesses
-        - Time tradeoff: Have to wait for sync-up, but memory access could be quick if coalesced access
-
+            - Time tradeoff: Have to wait for sync-up, but memory access could be quick if coalesced access
+4. Note: Align data accesses
+    - Multiples of 2
+    - [Offset Accesses](https://devblogs.nvidia.com/wp-content/uploads/2012/10/offset.png)
+            
 ## SPMD: Single Program Multiple Data - The CUDA Grid Model
 1. SIMD: Single _instruction_ Multiple Data
     - Special case of SPMD: threads move in lock-step
