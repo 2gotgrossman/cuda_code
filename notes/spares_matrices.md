@@ -39,8 +39,8 @@
 - Single-core, multi-core, single-GPU, multi-GPU
 - Stitching images together
     - Sparse bundle adjustment problem
-        - Non-linear least squares problem
-        - Linear Least Squares Problem
+            - Non-linear least squares problem
+            - Linear Least Squares Problem
 - Collects matrices to test his libraries
     - Need problems with real structure
     - Can't use random data
@@ -53,8 +53,8 @@
     - For `Lx = b` where `L` is lower triangular, `L, x, b` are sparse, you can think of `L` as a graph of edges and do a topological sort on it.
     - Since it is directed and lower-triangular, you know there is a topological sort. Definitely no cycles
 - Wrote MATLAB's sparse matrix package
-- [](http://faculty.cse.tamu.edu/davis/research_files/Stanford2013.pdf)
-- [](http://research.nvidia.com/sites/default/files/pubs/2011-06_Parallel-Solution-of/nvr-2011-001.pdf)
+- [StanfordTalk](http://faculty.cse.tamu.edu/davis/research_files/Stanford2013.pdf)
+- [Algorithm And Implementation](http://research.nvidia.com/sites/default/files/pubs/2011-06_Parallel-Solution-of/nvr-2011-001.pdf)
 
 ### LU Factorization
 - Factoring a matrix into a lower triangular matrix and an upper triangular matrix
